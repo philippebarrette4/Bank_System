@@ -1,3 +1,0 @@
-/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/cmake-build-debug/CMakeFiles/Bank_System.dir
