@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/main.cpp
+iostream
+-
+iomanip
+-
+./src/Pay.h
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/src/Pay.h
+./src/Account.h
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/src/Account.h
+
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/src/Account.h
+Pay.h
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/src/Pay.h
+string
+-
+vector
+-
+map
+-
+
+/Users/philbarrette/Documents/Programmation/C_plus_plus/Bank_System/src/Pay.h
+
