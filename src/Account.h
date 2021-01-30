@@ -13,6 +13,7 @@
 class Account {
 private:
     int Id_acc;
+    std::string name;
     int Id_pay;
     double total;
     std::map<std::string, std::vector<Pay>> p;
@@ -20,11 +21,15 @@ public:
     //Constructor - Destructor
     Account();
     Account(int);
+    Account(int,std::string);
     ~Account(){}
     //Get
     double getTotal(){return total;}
     int getId_acc(){return Id_acc;}
-    int printPaychecks();
+    std::string getName(){return name;}
+    //Display checks and cumulative total
+    void printPaychecks();
+    void printTotal();
     //Set
     void setId_acc(int);
     //Add a pay

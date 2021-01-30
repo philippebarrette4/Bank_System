@@ -10,33 +10,28 @@ void Menu();
 //User Input
 int mainInput();
 
+//Create an account
+Account create_account(int Id_acc);
+
 
 int main() {
 
-
-    /*
-    int Id_acc{10};
-    Account a(Id_acc);
-
-
-    std::cout << "Hello, World!" << std::endl;
-    std::cout << "Account: ";
-    std::cout << a.getId_acc() << std::endl;
-    a.addPay();
-    a.addPay();
-    a.addPay();
-    std::cout << a.printPaychecks() << std::endl;
-    */
+    int Id_acc {0};
     int choice;
-    int Id_acc{10};
-    Account a(Id_acc);
+    Account a;
 
-    while(1) {
+    //Creation of an account
+    a = create_account(Id_acc);
+    //Needs to add an option if the account is already created (when DB working)
+
+    if (NULL == a.getId_acc()) return 0;
+    while (1) {
 
         Menu();
         choice = mainInput();
 
         switch (choice) {
+
             case 1:
                 a.addPay();
                 break;
@@ -46,8 +41,7 @@ int main() {
                 break;
 
             case 3:
-                cout << "Cumulative total: "
-                     << a.getTotal() << " $" << endl;
+                a.printTotal();
                 break;
 
             case 4:
@@ -92,4 +86,26 @@ int mainInput(){
     }
     cout << endl;
     return choice;
+}
+
+//Create an account
+Account create_account(int Id_acc){
+
+    string name_val;
+    cout << "Creation of an account." << endl;
+    cout << "=======================" << endl;
+    cout << "Enter a name: ";
+    cin >> name_val;
+
+    while(!cin.good()){
+        cout << "Error, please enter a valid choice: ";
+        cin.clear();
+        cin.ignore(10000,'\n');
+        cin >> name_val;
+    }
+
+    Account a(++Id_acc, name_val);
+
+    cout << endl;
+    return a;
 }

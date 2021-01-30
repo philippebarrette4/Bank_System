@@ -10,11 +10,16 @@ using namespace std;
 
 
 Account::Account()
-    :Id_acc{0}, Id_pay{0}, total{0.0}, p{}{
+    :Id_acc{0}, name{"NA"}, Id_pay{0}, total{0.0}, p{}{
 }
 
 Account::Account(int Id_val)
-    :Id_pay{0}, total{0.0}, p{}{
+    :Id_pay{0}, name{"NA"}, total{0.0}, p{}{
+    setId_acc(Id_val);
+}
+
+Account::Account(int Id_val ,std::string name_val)
+    :Id_pay{0}, name{name_val}, total{0.0}, p{}{
     setId_acc(Id_val);
 }
 
@@ -22,7 +27,10 @@ void Account::setId_acc(int Id_val){
     this->Id_acc = Id_val;
 }
 
-int Account::printPaychecks() {
+void Account::printPaychecks() {
+    std::cout << "Account ID: " << getId_acc() << std::endl;
+    std::cout << "User name: " << getName() << std::endl;
+    std::cout << "======================" << std::endl;
     std::cout << "List of the paychecks:" << std::endl;
     //Loop through all keys "date"
     for (auto const &x: p) {
@@ -34,6 +42,16 @@ int Account::printPaychecks() {
         }
     }
 }
+
+void Account::printTotal(){
+    std::cout << "Account ID: " << getId_acc() << std::endl;
+    std::cout << "User name: " << getName() << std::endl;
+    std::cout << "======================" << std::endl;
+    cout << "Cumulative total: "
+         << getTotal() << " $" << endl;
+}
+
+
 
 //Add a pay
 void Account::addPay(){
