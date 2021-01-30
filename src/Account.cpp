@@ -3,6 +3,7 @@
 //
 
 #include "Account.h"
+#include <vector>
 #include <iostream>
 #include <iomanip>
 #include <ctime>
@@ -83,4 +84,38 @@ void Account::addPay(){
     v.push_back(pay);
 
     this->p[date] = v;
+}
+
+//Delete a pay
+void Account::deletePay(){
+
+    int Id_val;
+    cout << "Enter the pay ID: ";
+    cin >> Id_val;
+
+    //Check if the value is a float
+    while(!cin.good() | (Id_val < 0)){
+        cout << "Error, please enter a valid pay amount: ";
+        cin.clear();
+        cin.ignore(10000,'\n');
+        cin >> Id_val;
+    }
+
+    //Loop through all keys "date"
+    for (auto &x: p) {
+        //Loop through all the paycheck in the same "date" key
+        vector<Pay> t;
+        t = x.second;
+        //t.erase(t.begin()+6);
+        for(int i=0; i < t.size(); i++){
+            if(Id_val == t[i].getID()){
+                this->total -= t[i].getAmount();
+                t.erase(t.begin() + i);
+            }
+        }
+        x.second = t;
+    }
+
+
+
 }
