@@ -1,7 +1,9 @@
 #include <iostream>
 #include <iomanip>
 #include "./src/Pay.h"
+#include "./src/Pay.cpp"
 #include "./src/Account.h"
+#include "./src/Account.cpp"
 using namespace std;
 
 //Login, Sign in Menu
