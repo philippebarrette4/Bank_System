@@ -1,43 +1,67 @@
+#include <soci/soci.h>
+#include <soci/mysql/soci-mysql.h>
+#include <exception>
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include "./src/Pay.h"
 #include "./src/Pay.cpp"
 #include "./src/Account.h"
 #include "./src/Account.cpp"
-using namespace std;
+
+using namespace soci;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+
 
 //Login, Sign in Menu
 void userMenu();
-
 //Display the principal menu
 void mainMenu();
 
-//User Input
-int Input(int);
+//Validation function
+template <typename T> T Input(T&);
 
-//Create an account
-Account create_account(int Id_acc);
+//Creation of the account
+Account insert_account(session&, int);
+//Display the accounts
+void display_accounts(session&);
+
+
 
 
 int main() {
+
+    // Connect to MySQL database
+    session sql(mysql, "db=bank_db user=bank_dev1 password=Secure123");
+
 
     int Id_acc {0};
     int choice;
     Account a;
 
     userMenu();
-    choice = Input(2);
+    cout << "Choice: ";
+    cin >> choice;
+    //Validation of the input
+    choice = Input(choice);
 
     switch (choice){
         case 1:
             //Sign in
             //Creation of an account
-            a = create_account(Id_acc);
+            //Insert to DB
+            a = insert_account(sql, Id_acc);
             break;
         case 2:
             //Log in, needs DB
             //To do
             break;
+        default:
+            cout << "Enter correct choice.";
+            exit(0);
     }
 
     //Needs to add an option if the account is already created (when DB working)
@@ -46,15 +70,22 @@ int main() {
     while(true) {
 
         mainMenu();
-        choice = Input(5);
+        cout << "Choice: ";
+        cin >> choice;
+        //Validation of the input
+        choice = Input(choice);
 
         switch (choice) {
 
             case 1:
                 a.addPay();
+                // Insert data into users table
+                sql << "UPDATE accounts SET Total = '" << a.getTotal() << "' WHERE Id_acc = 1";
+                cout << endl << "> Successfully inserted account." << endl << endl;
                 break;
 
             case 2:
+                display_accounts(sql);
                 a.printPaychecks();
                 break;
 
@@ -67,6 +98,10 @@ int main() {
                 break;
 
             case 5:
+                exit(0);
+
+            default:
+                cout << "Enter correct choice.";
                 exit(0);
         }
     }
@@ -100,50 +135,70 @@ void mainMenu(){
 
     cout << "Select one of these options:" << endl;
     cout << "1. Add a pay." << endl;
-    cout << "2. Display all paychecks." << endl;
+    cout << "2. Display all paychecks and db." << endl;
     cout << "3. Display cumulative total." << endl;
     cout << "4. Delete a pay." << endl;
     cout << "5. Exit." << endl;
     cout << endl;
 }
 
-//User Input
-int Input(int num){
-
-    int choice;
-
-    cout << "Choice: ";
-    cin >> choice;
+//Validation function
+template <typename T> T Input(T& choice){
 
     //Check if the value is a int
-    while(!cin.good() | (choice < 0 | choice > num)){
+    while(!cin.good()){
         cout << "Error, please enter a valid choice: ";
         cin.clear();
         cin.ignore(10000,'\n');
         cin >> choice;
     }
-    cout << endl;
     return choice;
 }
 
-//Create an account
-Account create_account(int Id_acc){
+//Creation of an account
+Account insert_account(session& sql, int Id_acc) {
 
-    string name_val;
+    string first_name, last_name;
     cout << "Creation of an account." << endl;
     cout << "=======================" << endl;
-    cout << "Enter a name: ";
-    cin >> name_val;
+    cout << "Enter your first name: ";
+    cin >> first_name;
 
-    while(!cin.good()){
-        cout << "Error, please enter a valid choice: ";
-        cin.clear();
-        cin.ignore(10000,'\n');
-        cin >> name_val;
-    }
+    first_name = Input(first_name);
 
-    Account a(++Id_acc, name_val);
+    cout << "Enter your last name: ";
+    cin >> last_name;
 
-    cout << endl;
+    last_name = Input(last_name);
+
+    Account a(++Id_acc, first_name, last_name);
+
+    // Insert data into users table
+    sql << "INSERT INTO accounts(first_name, last_name, Total) VALUES(:fn, :ln, :t)",
+            use(first_name, "fn"), use(last_name, "ln"), use(0.0, "t");
+
+    cout << endl << "> Successfully inserted account." << endl << endl;
     return a;
+}
+
+
+//Print accounts informations from dbs
+void display_accounts(session& sql) {
+
+    // Retrieve all rows from users table
+    rowset<row> rs = (sql.prepare << "SELECT * FROM accounts");
+
+    // Iterate through the result set
+    for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
+        const row& r = *it;
+
+        std::cout << "ID: " << r.get<int>(0) << endl
+                  << "First Name: " << r.get<string>(1) << endl
+                  << "Last Name: " << r.get<string>(2) << endl;
+        if (r.get<double>(4) == false){
+            cout << "Total: " << "0.0" << endl;
+        } else {
+            cout << "Total: " << r.get<double>(4) << endl;
+        }
+    }
 }

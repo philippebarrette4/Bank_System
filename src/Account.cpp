@@ -1,26 +1,26 @@
 //
 // Created by Phil Barrette on 2021-01-27.
 //
-
 #include "Account.h"
 #include <vector>
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+
 using namespace std;
 
 
 Account::Account()
-    :Id_acc{0}, name{"NA"}, Id_pay{0}, total{0.0}, p{}{
+    :Id_acc{0}, first_name{"NA"}, last_name{"NA"}, Id_pay{0}, total{0.0}, p{}{
 }
 
 Account::Account(int Id_val)
-    :Id_pay{0}, name{"NA"}, total{0.0}, p{}{
+    :Id_pay{0}, first_name{"NA"}, last_name{"NA"}, total{0.0}, p{}{
     setId_acc(Id_val);
 }
 
-Account::Account(int Id_val ,std::string name_val)
-    :Id_pay{0}, name{name_val}, total{0.0}, p{}{
+Account::Account(int Id_val ,std::string fn, std::string ln)
+    :Id_pay{0}, first_name{fn}, last_name{ln}, total{0.0}, p{}{
     setId_acc(Id_val);
 }
 
