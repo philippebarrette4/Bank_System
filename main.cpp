@@ -47,10 +47,10 @@ int main() {
 
     userMenu();
     cout << "Choice: ";
-    cin >> choice;
     //Validation of the input
     choice = Input(choice);
 
+    //First loop
     switch (choice){
         case 1:
             //Sign in
@@ -69,14 +69,11 @@ int main() {
             exit(0);
     }
 
-    //Needs to add an option if the account is already created (when DB working)
-
-    if (0 == a.getId_acc()) return 0;
+    //Main (second) loop
     while(true) {
 
         mainMenu();
         cout << "Choice: ";
-        cin >> choice;
         //Validation of the input
         choice = Input(choice);
 
@@ -85,7 +82,7 @@ int main() {
             case 1:
                 a.addPay();
                 // Insert data into users table
-                sql << "UPDATE accounts SET Total = '" << a.getTotal() << "' WHERE Id_acc = 1";
+                sql << "UPDATE accounts SET Total = '" << a.getTotal() << "' WHERE Id_acc = :id", use(a.getId_acc(), "id");
                 cout << endl << "> Successfully inserted account." << endl << endl;
                 break;
 
@@ -150,6 +147,8 @@ void mainMenu(){
 //Validation function
 template <typename T> T Input(T& choice){
 
+    cin >> choice;
+
     //Check if the value is a int
     while(!cin.good()){
         cout << "Error, please enter a valid choice: ";
@@ -166,14 +165,10 @@ Account insert_account(session& sql, int Id_acc) {
     string first_name, last_name;
     cout << "\nCreation of an account." << endl;
     cout << "=======================" << endl;
+
     cout << "Enter your first name: ";
-    cin >> first_name;
-
     first_name = Input(first_name);
-
     cout << "Enter your last name: ";
-    cin >> last_name;
-
     last_name = Input(last_name);
 
     // Insert data into accounts table
@@ -202,8 +197,6 @@ Account login_account(session& sql) {
     cout << "\nLogin." << endl;
     cout << "=======================" << endl;
     cout << "Enter your account's ID: ";
-    cin >> ID_ACC;
-
     ID_ACC = Input(ID_ACC);
 
     // Retrieve data from accounts table
