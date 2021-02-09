@@ -32,6 +32,7 @@ public:
 
     //Set
     void setId_acc(int);
+    void setTotal(double);
 
     //Display checks and cumulative total
     void printPaychecks();

@@ -13,10 +13,20 @@ Pay::Pay(double amount, int ID){
     setID(ID);
 }
 
+Pay::Pay(double amount, int ID, std::string date){
+    setAmount(amount);
+    setID(ID);
+    setDate(date);
+}
+
 void Pay::setAmount(double amount) {
     this->amount = amount;
 }
 
 void Pay::setID(int ID){
     this->ID = ID;
+}
+
+void Pay::setDate(std::string date){
+    this->date = date;
 }

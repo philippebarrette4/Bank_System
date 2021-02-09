@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 Account::Account()
     :Id_acc{0}, first_name{"NA"}, last_name{"NA"}, Id_pay{0}, total{0.0}, p{}{
 }
@@ -26,6 +25,10 @@ Account::Account(int Id_val ,std::string fn, std::string ln)
 
 void Account::setId_acc(int Id_val){
     this->Id_acc = Id_val;
+}
+
+void Account::setTotal(double Total){
+    this->total = Total;
 }
 
 void Account::printPaychecks() {
@@ -58,7 +61,7 @@ void Account::printTotal(){
 void Account::addPay(){
 
     double amount;
-    cout << "Enter the pay amount: ";
+    cout << "\nEnter the pay amount: ";
     cin >> amount;
 
     //Check if the value is a float
@@ -71,7 +74,7 @@ void Account::addPay(){
 
     this->total += amount;
 
-    Pay pay(amount, ++(this->Id_pay));
+
 
     time_t now = time(0);
     tm *ltm = localtime(&now);
@@ -80,6 +83,7 @@ void Account::addPay(){
                   std::to_string(1 + ltm->tm_mon) + "/" +
                   std::to_string(ltm->tm_mday);
 
+    Pay pay(amount, ++(this->Id_pay), date);
     std::vector<Pay> v = this->p[date];
     v.push_back(pay);
 

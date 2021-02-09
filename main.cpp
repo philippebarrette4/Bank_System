@@ -26,6 +26,9 @@ template <typename T> T Input(T&);
 
 //Creation of the account
 Account insert_account(session&, int);
+//Login account
+Account login_account(session&);
+
 //Display the accounts
 void display_accounts(session&);
 
@@ -56,8 +59,10 @@ int main() {
             a = insert_account(sql, Id_acc);
             break;
         case 2:
-            //Log in, needs DB
-            //To do
+            //Log in
+            //Creation of an account
+            //Retrieve from DB
+            a = login_account(sql);
             break;
         default:
             cout << "Enter correct choice.";
@@ -159,7 +164,7 @@ template <typename T> T Input(T& choice){
 Account insert_account(session& sql, int Id_acc) {
 
     string first_name, last_name;
-    cout << "Creation of an account." << endl;
+    cout << "\nCreation of an account." << endl;
     cout << "=======================" << endl;
     cout << "Enter your first name: ";
     cin >> first_name;
@@ -171,18 +176,56 @@ Account insert_account(session& sql, int Id_acc) {
 
     last_name = Input(last_name);
 
-    Account a(++Id_acc, first_name, last_name);
-
-    // Insert data into users table
+    // Insert data into accounts table
     sql << "INSERT INTO accounts(first_name, last_name, Total) VALUES(:fn, :ln, :t)",
             use(first_name, "fn"), use(last_name, "ln"), use(0.0, "t");
 
     cout << endl << "> Successfully inserted account." << endl << endl;
+
+    int ID_ACC;
+    //Select the id of the account in the database
+    sql << "SELECT Id_acc FROM accounts ORDER BY Id_acc DESC LIMIT 1", into(ID_ACC);
+
+    //Creation of the account object
+    Account a(ID_ACC, first_name, last_name);
+
     return a;
 }
 
+//Creation of an account
+Account login_account(session& sql) {
 
-//Print accounts informations from dbs
+    int ID_ACC;
+    double total;
+    string first_name, last_name;
+
+    cout << "\nLogin." << endl;
+    cout << "=======================" << endl;
+    cout << "Enter your account's ID: ";
+    cin >> ID_ACC;
+
+    ID_ACC = Input(ID_ACC);
+
+    // Retrieve data from accounts table
+    rowset<row> rs = (sql.prepare << "SELECT * FROM accounts WHERE Id_acc = :id", use(ID_ACC, "id"));
+    rowset<row>::const_iterator it = rs.begin();
+    const row& r = *it;
+
+    ID_ACC = r.get<int>(0);
+    first_name = r.get<string>(1);
+    last_name = r.get<string>(2);
+    total = r.get<double>(4);
+
+    cout << endl << "> Successfully retrieved account." << endl << endl;
+
+    //Creation of the account object
+    Account a(ID_ACC, first_name, last_name);
+    a.setTotal(total);
+
+    return a;
+}
+
+//Print accounts information from db
 void display_accounts(session& sql) {
 
     // Retrieve all rows from users table
@@ -192,13 +235,9 @@ void display_accounts(session& sql) {
     for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
         const row& r = *it;
 
-        std::cout << "ID: " << r.get<int>(0) << endl
+        std::cout << "\nID: " << r.get<int>(0) << endl
                   << "First Name: " << r.get<string>(1) << endl
-                  << "Last Name: " << r.get<string>(2) << endl;
-        if (r.get<double>(4) == false){
-            cout << "Total: " << "0.0" << endl;
-        } else {
-            cout << "Total: " << r.get<double>(4) << endl;
-        }
+                  << "Last Name: " << r.get<string>(2) << endl
+                  << "Total: " << r.get<double>(4) << endl;
     }
 }
