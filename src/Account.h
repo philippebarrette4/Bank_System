@@ -4,6 +4,8 @@
 
 #ifndef BANK_SYSTEM_ACCOUNT_H
 #define BANK_SYSTEM_ACCOUNT_H
+#include <soci/soci.h>
+#include <soci/mysql/soci-mysql.h>
 #include "Pay.h"
 #include <string>
 #include <vector>
@@ -35,14 +37,14 @@ public:
     void setTotal(double);
 
     //Display checks and cumulative total
-    void printPaychecks();
-    void printTotal();
+    void printPaychecks(soci::session&);
+    void printTotal(soci::session&);
 
     //Add a pay
-    void addPay();
+    void addPay(soci::session&);
 
     //Delete a pay
-    void deletePay();
+    void deletePay(soci::session&);
 };
 
 

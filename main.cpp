@@ -24,13 +24,20 @@ void mainMenu();
 //Validation function
 template <typename T> T Input(T&);
 
-//Creation of the account
-Account insert_account(session&, int);
-//Login account
+//Sign in - Creation of account
+Account insert_account(session&);
+//Login - retrive account
 Account login_account(session&);
 
 //Display the accounts
-void display_accounts(session&);
+//void display_accounts(session&);
+
+
+//Enter paycheck into db
+
+
+
+
 
 
 
@@ -40,8 +47,6 @@ int main() {
     // Connect to MySQL database
     session sql(mysql, "db=bank_db user=bank_dev1 password=Secure123");
 
-
-    int Id_acc {0};
     int choice;
     Account a;
 
@@ -56,7 +61,7 @@ int main() {
             //Sign in
             //Creation of an account
             //Insert to DB
-            a = insert_account(sql, Id_acc);
+            a = insert_account(sql);
             break;
         case 2:
             //Log in
@@ -79,24 +84,25 @@ int main() {
 
         switch (choice) {
 
+            //Done
             case 1:
-                a.addPay();
-                // Insert data into users table
-                sql << "UPDATE accounts SET Total = '" << a.getTotal() << "' WHERE Id_acc = :id", use(a.getId_acc(), "id");
-                cout << endl << "> Successfully inserted account." << endl << endl;
+                a.addPay(sql);
                 break;
-
+            //Done
             case 2:
-                display_accounts(sql);
-                a.printPaychecks();
+                //display_accounts(sql);
+                a.printPaychecks(sql);
                 break;
 
             case 3:
-                a.printTotal();
+                /*
+                 * To Do
+                 */
+                a.printTotal(sql);
                 break;
 
             case 4:
-                a.deletePay();
+                a.deletePay(sql);
                 break;
 
             case 5:
@@ -160,7 +166,7 @@ template <typename T> T Input(T& choice){
 }
 
 //Creation of an account
-Account insert_account(session& sql, int Id_acc) {
+Account insert_account(session& sql) {
 
     string first_name, last_name;
     cout << "\nCreation of an account." << endl;
@@ -219,6 +225,7 @@ Account login_account(session& sql) {
 }
 
 //Print accounts information from db
+/*
 void display_accounts(session& sql) {
 
     // Retrieve all rows from users table
@@ -234,3 +241,4 @@ void display_accounts(session& sql) {
                   << "Total: " << r.get<double>(4) << endl;
     }
 }
+ */
