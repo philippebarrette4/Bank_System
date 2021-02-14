@@ -1,0 +1,31 @@
+- Check user input for id if login
+CHECK
+
+- > Successfully inserted paycheck into paychecks.
+CHECK
+
+
+- Display paychecks
+    The problem is when an account hasn't a paycheck.
+    It will output nothing
+    I don't know how to send a message of empty (There is no paychecks) because I can't verify if rs.begin() == rs.end()
+    It's a bug with soci.
+
+    For the rest, there's no bug
+
+
+
+- Display cumulative total
+CHECK
+
+
+/**
+*TO DO
+*/
+- Delete pay doesn't work in the DB
+
+- ID pay should be restart at 1 for each account
+    Ex: If there's 2 pays in account 1, on don't want that the first pay of the account 2 has id 3.
+
+- Clean the code
+- Clean github

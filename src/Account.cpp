@@ -36,32 +36,30 @@ void Account::printPaychecks(soci::session& sql) {
     // Retrieve all rows from users table
     soci::rowset<soci::row> rs = (sql.prepare << "SELECT * FROM paychecks WHERE Id_acc = :id", soci::use(this->getId_acc(), "id"));
 
-    const soci::row& r1 = *rs.begin();
-    std::cout << "\nAccount ID: " << r1.get<int>(3) << endl
+    std::cout << "\nAccount ID: " << this->getId_acc() << endl
     << "======================" << std::endl;
-
 
     // Iterate through the result set
     for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
-        const soci::row& r2 = *it;
+        const soci::row& r = *it;
 
-        std::cout << "Paycheck ID: " << r2.get<int>(0) << endl
-        << "    => Date: " << r2.get<string>(2) << endl
-        << "    => Amount: " << r2.get<double>(1) << " $" << endl;
+        std::cout << "Paycheck ID: " << r.get<int>(0) << endl
+                  << "    => Date: " << r.get<string>(2) << endl
+                  << "    => Amount: " << r.get<double>(1) << " $" << endl;
     }
 }
 
 
+
 void Account::printTotal(soci::session& sql){
-    std::cout << "Account ID: " << getId_acc() << std::endl;
+    std::cout << "\nAccount ID: " << getId_acc() << std::endl;
     std::cout << "User name: " << getName() << std::endl;
     std::cout << "======================" << std::endl;
-    cout << "Cumulative total: "
-         << getTotal() << " $" << endl;
+
     soci::rowset<soci::row> rs = (sql.prepare << "SELECT Total FROM accounts WHERE Id_acc = :id", soci::use(this->getId_acc(), "id"));
     const soci::row& r = *rs.begin();
 
-    std::cout << "Cumulative total (DB): " << r.get<double>(4)<< endl;
+    std::cout << "Cumulative total (DB): " << r.get<double>(0) << "$" << endl << endl;
 }
 
 
@@ -90,28 +88,37 @@ void Account::addPay(soci::session& sql){
                   std::to_string(1 + ltm->tm_mon) + "/" +
                   std::to_string(ltm->tm_mday);
 
-    Pay pay(amount, ++(this->Id_pay), date);
-    std::vector<Pay> v = this->p[date];
-    v.push_back(pay);
-
-    this->p[date] = v;
-
     // Insert data into paychecks table
     sql << "INSERT INTO paychecks(amount, date, Id_acc) VALUES(:a, :d, :id)",
             soci::use(amount, "a"), soci::use(date, "d"), soci::use(this->getId_acc(), "id");
 
     //Update of the cumulative total in accounts table
     sql << "UPDATE accounts SET Total = '" << this->getTotal() << "' WHERE Id_acc = :id", soci::use(this->getId_acc(), "id");
-    cout << endl << "> Successfully inserted account." << endl;
+    cout << endl << "> Successfully modified total in account." << endl;
     cout << "> Successfully inserted paycheck into paychecks." << endl << endl;
+
+
+
+    // Retrieve all rows from users table
+    soci::rowset<soci::row> rs = (sql.prepare << "SELECT Id_pay FROM paychecks "
+                                                 "WHERE Id_acc = :id "
+                                                 "ORDER BY Id_pay DESC", soci::use(this->getId_acc(), "id"));
+    const soci::row& r = *rs.begin();
+
+    cout << r.get<int>(0)
+            << r.get<double>(1)
+            << r.get<int>(3) << endl;
+
+    int ID_PAY = r.get<int>(0);
+
+    Pay pay(amount, ID_PAY, date);
+    std::vector<Pay> v = this->p[date];
+    v.push_back(pay);
+
+    this->p[date] = v;
+
+
 }
-
-
-
-
-/*
- * TO DO
- */
 
 
 //Delete a pay
@@ -136,6 +143,12 @@ void Account::deletePay(soci::session& sql){
         t = x.second;
         //t.erase(t.begin()+6);
         for(int i=0; i < t.size(); i++){
+
+            cout << Id_val << endl;
+            cout << t[i].getID() << endl;
+
+
+
             if(Id_val == t[i].getID()){
                 this->total -= t[i].getAmount();
                 t.erase(t.begin() + i);

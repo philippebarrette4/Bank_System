@@ -14,7 +14,8 @@
 
 class Account {
 private:
-    int Id_acc, Id_pay;
+    int Id_acc;
+    int Id_pay;
     std::string first_name, last_name;
     double total;
     std::map<std::string, std::vector<Pay>> p;

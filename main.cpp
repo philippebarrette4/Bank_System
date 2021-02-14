@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
+#include <algorithm>
 #include "./src/Pay.h"
 #include "./src/Pay.cpp"
 #include "./src/Account.h"
@@ -199,46 +201,56 @@ Account login_account(session& sql) {
     int ID_ACC;
     double total;
     string first_name, last_name;
+    vector<int> v;
+    Account a;
+
 
     cout << "\nLogin." << endl;
     cout << "=======================" << endl;
     cout << "Enter your account's ID: ";
     ID_ACC = Input(ID_ACC);
 
-    // Retrieve data from accounts table
-    rowset<row> rs = (sql.prepare << "SELECT * FROM accounts WHERE Id_acc = :id", use(ID_ACC, "id"));
-    rowset<row>::const_iterator it = rs.begin();
-    const row& r = *it;
+    // Retrieve all rows from users table
+    soci::rowset<soci::row> rs = (sql.prepare << "SELECT Id_acc FROM accounts");
 
-    ID_ACC = r.get<int>(0);
-    first_name = r.get<string>(1);
-    last_name = r.get<string>(2);
-    total = r.get<double>(4);
 
-    cout << endl << "> Successfully retrieved account." << endl << endl;
 
-    //Creation of the account object
-    Account a(ID_ACC, first_name, last_name);
-    a.setTotal(total);
+    // Iterate through the result set
+    for (soci::rowset<soci::row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
+        const soci::row& r = *it;
+         v.push_back(r.get<int>(0));
+    }
 
+    if ((find(v.begin(), v.end(), ID_ACC) != v.end()) & (ID_ACC != 0)){
+        // Retrieve data from accounts table
+        rs = (sql.prepare << "SELECT * FROM accounts WHERE Id_acc = :id", use(ID_ACC, "id"));
+        rowset<row>::const_iterator it = rs.begin();
+        const row& r = *it;
+
+        ID_ACC = r.get<int>(0);
+        first_name = r.get<string>(1);
+        last_name = r.get<string>(2);
+        total = r.get<double>(3);
+
+        cout << endl << "> Successfully retrieved account." << endl << endl;
+
+        //Creation of the account object on the head
+        //with a smart pointer
+        unique_ptr<Account> a2(new Account(ID_ACC, first_name, last_name));
+        a2->setTotal(total);
+        a = *a2;
+    }
+    else{
+        int again;
+        cout << endl << "> Account not found." << endl << endl;
+        cout << "To Try again press 1, else 0: ";
+        cin >> again;
+
+        if(again == 1)
+            login_account(sql); //Recursive
+        else
+            exit(0);
+    }
     return a;
 }
 
-//Print accounts information from db
-/*
-void display_accounts(session& sql) {
-
-    // Retrieve all rows from users table
-    rowset<row> rs = (sql.prepare << "SELECT * FROM accounts");
-
-    // Iterate through the result set
-    for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
-        const row& r = *it;
-
-        std::cout << "\nID: " << r.get<int>(0) << endl
-                  << "First Name: " << r.get<string>(1) << endl
-                  << "Last Name: " << r.get<string>(2) << endl
-                  << "Total: " << r.get<double>(4) << endl;
-    }
-}
- */
